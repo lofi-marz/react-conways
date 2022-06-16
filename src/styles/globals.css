@@ -4,9 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
+.react-p5 {
+    @apply w-full h-full !important
+}
+
+.react-p5 canvas {
+    @apply h-full w-full !important
+}
+
 
 @layer utilities {
-    .text-gradient{
+    .text-gradient {
         @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent !important
     }
 }

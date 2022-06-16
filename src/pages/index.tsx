@@ -1,14 +1,31 @@
 import type { NextPage } from 'next';
 
-import React from 'react';
+import React, { useReducer } from 'react';
+import { ArrayBoard, createBoard, updateBoard } from 'game/game';
+import { GameCanvas } from '../components/GameCanvas';
 
+function reducer(state: ArrayBoard): ArrayBoard {
+    return updateBoard(state);
+}
 
 const Home: NextPage = () => {
-
+    const testBoard = createBoard([
+        [0, 0, 0],
+        [1, 1, 1],
+        [0, 0, 0],
+    ]);
+    const [state, dispatch] = useReducer(reducer, testBoard);
+    console.log(state);
+    const renderRow = (row: ArrayBoard[number]) => {
+        return row.map((cell, i) => <span key={i}>{cell ? '1' : '0'}</span>);
+    };
     return (
-        <React.Fragment key="home">
-            <h1>Hi</h1>
-        </React.Fragment>
+        <>
+            <div className="h-screen w-screen">
+                <GameCanvas />
+            </div>
+            <button onClick={dispatch}>Update</button>
+        </>
     );
 };
 
