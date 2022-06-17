@@ -15,16 +15,16 @@ const Home: NextPage = () => {
         [0, 0, 0],
     ]);
     const [state, dispatch] = useReducer(reducer, testBoard);
-    console.log(state);
     const renderRow = (row: ArrayBoard[number]) => {
         return row.map((cell, i) => <span key={i}>{cell ? '1' : '0'}</span>);
     };
+
     return (
         <>
             <div className="h-screen w-screen">
                 <GameCanvas />
             </div>
-            <button onClick={dispatch}>Update</button>
+            <button>Update</button>
         </>
     );
 };

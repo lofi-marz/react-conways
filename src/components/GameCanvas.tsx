@@ -22,8 +22,9 @@ export function GameCanvas() {
     let zoom = 1;
     let slider: P5.Element;
 
-    const mouseX = 0;
-    const mouseY = 0;
+    let oldMouse: Vector | undefined;
+    let newMouse: Vector;
+
     let center: Vector;
     const setup = (p5: P5, canvasParentRef: Element) => {
         width = p5.windowWidth;
@@ -38,23 +39,17 @@ export function GameCanvas() {
         zoom = slider.value() as number;
         const cellXCount = p5.width / (CELL_SIZE + GAP) / zoom;
         const cellYCount = p5.height / (CELL_SIZE + GAP) / zoom;
-        const xOffset = 2;
-        const yOffset = 2;
+        const xOffset = center.x / (CELL_SIZE + GAP) / zoom;
+        const yOffset = center.y / (CELL_SIZE + GAP) / zoom;
         //If we shift 10 cells to the left
         //There are 10 cells on the left that don't need to be rendered
         //So instead of starting from 0 we'd start at 10
         //And there are 10 extra on the right that need to be rendered
-        for (let j = -yOffset; j < cellYCount - yOffset; j++) {
-            for (let i = -xOffset; i < cellXCount - xOffset; i++) {
-                const x =
-                    CELL_SIZE * i * zoom +
-                    GAP * (i - 1) +
-                    (center.x - p5.width / 2);
-                const y =
-                    CELL_SIZE * j * zoom +
-                    GAP * (j - 1) +
-                    (center.y - p5.height / 2);
-                if (j == 5 && i == 5) {
+        for (let j = -yOffset - 1; j < cellYCount - yOffset + 1; j++) {
+            for (let i = -xOffset - 1; i < cellXCount - xOffset + 1; i++) {
+                const x = CELL_SIZE * i * zoom + GAP * (i - 1) + center.x;
+                const y = CELL_SIZE * j * zoom + GAP * (j - 1) + center.y;
+                if (Math.round(j) == 5 && Math.round(i) == 5) {
                     p5.fill('red');
                 } else {
                     p5.fill('white');
@@ -64,7 +59,7 @@ export function GameCanvas() {
                 p5.square(x, y, CELL_SIZE * zoom);
                 p5.fill('black');
                 p5.text(
-                    `${i.toFixed(1)},\n${j.toFixed(1)}`,
+                    `${i.toFixed(0)},\n${j.toFixed(0)}`,
                     x + CELL_SIZE / 2,
                     y + CELL_SIZE / 2
                 );
@@ -77,9 +72,28 @@ export function GameCanvas() {
     };
 
     const onMouseDrag = (p5: P5) => {
-        p5.stroke('black');
-        p5.line(mouseX, mouseY, p5.mouseX, p5.mouseY);
-        console.log(mouseX, mouseY, p5.mouseX, p5.mouseY);
+        if (!oldMouse) {
+            console.log('oldMouse was null');
+            oldMouse = { x: p5.mouseX, y: p5.mouseY };
+        }
+        newMouse = {
+            x: p5.mouseX,
+            y: p5.mouseY,
+        };
+
+        const delta: Vector = {
+            x: newMouse.x - oldMouse.x,
+            y: newMouse.y - oldMouse.y,
+        };
+        //This isn't working and idk why
+        /*center.x += delta.x;
+        center.y += delta.y;*/
+        console.log(oldMouse, newMouse, delta);
+    };
+
+    const onMouseClick = (p5: P5) => {
+        oldMouse = { x: p5.mouseX, y: p5.mouseY };
+        center = { x: p5.mouseX, y: p5.mouseY };
     };
 
     return (
@@ -88,12 +102,7 @@ export function GameCanvas() {
             draw={draw}
             windowResized={onResize}
             mouseDragged={onMouseDrag}
-            mousePressed={(p5: P5) => {
-                center = {
-                    x: p5.mouseX,
-                    y: p5.mouseY,
-                };
-            }}
+            mouseClicked={onMouseClick}
         />
     );
 }
